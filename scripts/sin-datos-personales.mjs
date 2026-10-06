@@ -27,7 +27,7 @@ export const PATRONES_KEY = [
 ];
 
 // Las URL públicas del repo pueden nombrar al dueño.
-export const PERMITIDOS = ['github.com/fpiraguad/mi-claude', 'fpiraguad.github.io/mi-claude'];
+export const PERMITIDOS = ['raw.githubusercontent.com/fpiraguad/mi-claude', 'github.com/fpiraguad/mi-claude', 'fpiraguad.github.io/mi-claude'];
 
 const MARCADOR = /xxx|…|\.\.\.|tu-key/i;
 export const esMarcador = (texto) => MARCADOR.test(texto);

@@ -21,7 +21,7 @@ Además, un método de trabajo para Claude (skills y reglas) que lo hace más or
 2. Pega esta instrucción y sigue lo que Claude te diga:
 
    ```
-   Instala mi asistente desde https://github.com/fpiraguad/mi-claude siguiendo su INSTALAR.md
+   Instala mi asistente: lee https://raw.githubusercontent.com/fpiraguad/mi-claude/main/INSTALAR.md y sigue sus pasos.
    ```
 
 Claude descarga todo, instala lo necesario y te abre cada página en su navegador integrado.

@@ -1,7 +1,7 @@
 # INSTALAR.md — guion para Claude
 
 > Este archivo está escrito **para ti, Claude**. La persona te pegó una instrucción como
-> *"Instala mi asistente desde https://github.com/fpiraguad/mi-claude siguiendo su INSTALAR.md"*.
+> *"Instala mi asistente: lee https://raw.githubusercontent.com/fpiraguad/mi-claude/main/INSTALAR.md y sigue sus pasos."*.
 > Síguelo en orden, en español, con mensajes cortos y amables. La persona **no es técnica**:
 > no le pidas que abra una terminal ni que entienda comandos. Tú corres los comandos; ella solo
 > hace lo que únicamente ella puede hacer (entrar a sus cuentas, escanear un QR, aprobar permisos).
@@ -108,7 +108,9 @@ Rename-Item mi-claude-main mi-claude
 Remove-Item mi-claude.zip
 ```
 
-Comprueba que existe `~/mi-claude/INSTALAR.md`. No hace falta Git.
+Comprueba que existe `~/mi-claude/INSTALAR.md`. **No uses `git clone` ni ningún comando `git`**:
+la persona puede no tener Git, y en un Mac nuevo el simple hecho de llamar a `git` abre una ventana
+pidiendo instalar "herramientas de desarrollador". El ZIP es suficiente.
 
 ## Paso 2 — Node.js 22.13 o más nuevo
 
