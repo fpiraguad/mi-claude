@@ -30,13 +30,16 @@ Tú solo entras a tus cuentas, escaneas un QR con el celular y apruebas permisos
 
 ### Mac
 
-- Funciona en macOS reciente. No necesita contraseña de administrador: Node se instala con nvm en tu usuario.
+- Funciona en macOS reciente. **No necesitas Git ni las herramientas de desarrollador**, ni contraseña de
+  administrador: Node se instala dentro de tu usuario (`~/.local/node`).
+- Si macOS muestra una ventana pidiendo instalar "herramientas de desarrollador", toca **Cancelar**: no hacen falta.
 - WhatsApp corre en segundo plano como servicio de tu usuario y arranca solo al encender.
 
 ### Windows
 
 - Windows 10 u 11. **No necesitas Git.** Claude usa PowerShell.
-- Node se instala con `winget`; Windows puede pedirte que aceptes una ventana de permiso.
+- Node se instala con `winget` o, si tu Windows no lo trae, con el instalador oficial; Windows te pedirá
+  aceptar una ventana de permiso: toca **Sí**.
 - WhatsApp arranca solo al iniciar sesión (sin permisos de administrador).
 
 ## Qué necesitas

@@ -55,6 +55,9 @@ Díselos a la persona al empezar, en 3 líneas, y recuérdalos cuando toque:
 - Si un comando falla, lee el error, intenta arreglarlo tú (máximo 2 intentos razonables) y, si no,
   explícale a la persona en una frase qué pasó y qué opción tiene. No la llenes de texto técnico.
 - No inventes. Si algo no se pudo verificar, dilo.
+- **Mac sin herramientas de desarrollador:** si aparece una ventana de macOS pidiendo instalar
+  "herramientas de desarrollador" (o "command line developer tools"), dile a la persona que toque
+  **Cancelar**: nada de esta instalación las necesita. Sigue con el paso en el que ibas.
 
 ## Regla de retomar
 
