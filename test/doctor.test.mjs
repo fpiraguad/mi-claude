@@ -73,7 +73,7 @@ test('doctor con todo listo da todoBien', async () => {
   const r = await diagnosticar({
     env, repo, version: '22.20.0', listarKeys: keys(true),
     fetch: async () => ({ json: async () => ({ conectado: true }) }),
-    existe: (p) => p.endsWith(`${path.sep}.local${path.sep}bin${path.sep}claude`) || p.endsWith('/.local/bin/claude'),
+    existe: (p) => /[\\/]\.local[\\/]bin[\\/]claude(\.exe)?$/.test(p),
     listarMcp: () => 'parallel-search: https://search.parallel.ai/mcp (HTTP) - ✔ Connected\ncomposio: https://connect.composio.dev/mcp (HTTP) - ✔ Connected\n',
   });
   assert.deepEqual(r.filas.filter((f) => !['ok', 'opcional'].includes(f.estado)), []);

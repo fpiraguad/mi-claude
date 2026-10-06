@@ -105,8 +105,8 @@ export function generarCmd({ node, wsp }) {
 export function rutasArranque({ plataforma = process.platform, home = os.homedir(), env = process.env } = {}) {
   if (plataforma === 'darwin') {
     return {
-      lanzador: path.join(home, 'Library', 'LaunchAgents', `${ETIQUETA}.plist`),
-      comando: path.join(home, '.local', 'bin', 'wsp'),
+      lanzador: path.posix.join(home, 'Library', 'LaunchAgents', `${ETIQUETA}.plist`),
+      comando: path.posix.join(home, '.local', 'bin', 'wsp'),
     };
   }
   if (plataforma === 'win32') {
