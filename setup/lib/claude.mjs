@@ -88,7 +88,7 @@ export function tieneBloque(texto, inicio = INICIO_METODO, fin = FIN_METODO) {
 export function buscarClaude({ env = process.env, plataforma = process.platform, existe, home } = {}) {
   const win = plataforma === 'win32';
   const p = win ? path.win32 : path.posix;
-  const casa = home || (win ? env.USERPROFILE : env.HOME) || '';
+  const casa = home || (win ? env.USERPROFILE || env.HOME : env.HOME) || '';
   const nombres = win ? ['claude.exe', 'claude.cmd', 'claude'] : ['claude'];
   const rutaPATH = env.PATH ?? env.Path ?? '';
   const candidatos = [];
