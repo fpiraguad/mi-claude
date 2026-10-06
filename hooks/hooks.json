@@ -1,0 +1,8 @@
+[
+  { "archivo": "en-paralelo.mjs", "evento": "UserPromptSubmit", "timeout": 5 },
+  { "archivo": "encargo-en-lista.mjs", "evento": "UserPromptSubmit", "timeout": 5 },
+  { "archivo": "sin-sondeo.mjs", "evento": "PreToolUse", "matcher": "Bash|PowerShell", "timeout": 5 },
+  { "archivo": "sin-atajos.mjs", "evento": "PreToolUse", "matcher": "Bash|PowerShell", "timeout": 5 },
+  { "archivo": "exigir-pruebas.mjs", "evento": "PreToolUse", "matcher": "Bash|PowerShell", "timeout": 8 },
+  { "archivo": "datos-idempotentes.mjs", "evento": "PostToolUse", "matcher": "Edit|Write|MultiEdit", "timeout": 5 }
+]

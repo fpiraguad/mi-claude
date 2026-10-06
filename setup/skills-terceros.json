@@ -1,0 +1,79 @@
+{
+  "nota": "Skills de terceros: se instalan desde su repo original con `npx -y skills add <fuente> -g -y -a claude-code --copy -s <skills>`. Si eso falla (por ejemplo, sin Git), instalar.mjs descarga el ZIP del repo y copia cada carpeta de `rutas`.",
+  "repos": [
+    {
+      "fuente": "remotion-dev/skills",
+      "rutas": {
+        "remotion-best-practices": "skills/remotion-best-practices",
+        "remotion-captions": "skills/remotion-captions",
+        "remotion-create": "skills/remotion-create",
+        "remotion-docs": "skills/remotion-docs",
+        "remotion-interactivity": "skills/remotion-interactivity",
+        "remotion-maps": "skills/remotion-maps",
+        "remotion-markup": "skills/remotion-markup",
+        "remotion-render": "skills/remotion-render",
+        "remotion-saas": "skills/remotion-saas",
+        "remotion-upgrade": "skills/remotion-upgrade"
+      }
+    },
+    {
+      "fuente": "supabase/agent-skills",
+      "rutas": {
+        "supabase": "skills/supabase",
+        "supabase-postgres-best-practices": "skills/supabase-postgres-best-practices"
+      }
+    },
+    {
+      "fuente": "parallel-web/parallel-agent-skills",
+      "rutas": {
+        "parallel-web-search": "skills/parallel-web-search",
+        "parallel-deep-research": "skills/parallel-deep-research"
+      }
+    },
+    {
+      "fuente": "mattpocock/skills",
+      "rutas": {
+        "codebase-design": "skills/engineering/codebase-design",
+        "domain-modeling": "skills/engineering/domain-modeling",
+        "grilling": "skills/productivity/grilling",
+        "improve-codebase-architecture": "skills/engineering/improve-codebase-architecture"
+      }
+    },
+    {
+      "fuente": "anthropics/skills",
+      "rutas": {
+        "frontend-design": "skills/frontend-design"
+      }
+    },
+    {
+      "fuente": "vercel-labs/agent-skills",
+      "rutas": {
+        "web-design-guidelines": "skills/web-design-guidelines"
+      }
+    },
+    {
+      "fuente": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "rutas": {
+        "ui-ux-pro-max": ".claude/skills/ui-ux-pro-max",
+        "design": ".claude/skills/design",
+        "design-system": ".claude/skills/design-system",
+        "ui-styling": ".claude/skills/ui-styling",
+        "brand": ".claude/skills/brand",
+        "banner-design": ".claude/skills/banner-design",
+        "slides": ".claude/skills/slides"
+      }
+    },
+    {
+      "fuente": "wondelai/skills",
+      "rutas": {
+        "clean-code": "clean-code"
+      }
+    },
+    {
+      "fuente": "lackeyjb/playwright-skill",
+      "rutas": {
+        "playwright-skill": "skills/playwright-skill"
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "mi-claude-whatsapp",
+  "private": true,
+  "type": "module",
+  "description": "Servicio local de WhatsApp para mi-claude: Baileys + node:sqlite + API en 127.0.0.1",
+  "engines": { "node": ">=22.13" },
+  "scripts": { "start": "node servicio.mjs" },
+  "dependencies": {
+    "baileys": "7.0.0-rc14",
+    "ffmpeg-static": "5.3.0",
+    "pino": "10.4.0",
+    "qrcode": "1.5.4"
+  }
+}

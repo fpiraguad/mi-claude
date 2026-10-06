@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pruebas:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Pruebas
+        run: node --test "test/*.test.mjs"
+
+      - name: Sin keys ni datos personales
+        run: node scripts/sin-datos-personales.mjs
+
+      - name: Instalación en seco
+        env:
+          CLAUDE_CONFIG_DIR: ${{ runner.temp }}/claude-config
+          MI_CLAUDE_DIR: ${{ runner.temp }}/mi-claude-datos
+        run: node setup/instalar.mjs --en-seco
+
+      - name: Doctor (informativo)
+        env:
+          CLAUDE_CONFIG_DIR: ${{ runner.temp }}/claude-config
+          MI_CLAUDE_DIR: ${{ runner.temp }}/mi-claude-datos
+        run: node setup/doctor.mjs --json

@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mi-claude · Instalar</title>
+<meta name="description" content="Instala tu asistente de Claude con WhatsApp, correo, búsqueda e imágenes en 10 minutos. Mac y Windows, sin saber programar.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23d9653b'/%3E%3Cpath d='M18 34l9 9 19-21' stroke='white' stroke-width='7' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#fbf7f1; --bg-2:#f3ece1; --card:#ffffff; --ink:#1f1a16; --ink-2:#5c534b; --line:#e6dccd;
+  --accent:#d9653b; --accent-ink:#ffffff; --accent-soft:#fbe3d7; --ok:#2f8a57; --ok-soft:#dcf1e4;
+  --wa:#25d366; --shadow:0 1px 2px rgba(60,40,20,.06),0 8px 24px rgba(60,40,20,.08);
+  --radius:20px; --font-head:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --font-body:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16130f; --bg-2:#1e1a15; --card:#231e18; --ink:#f5efe6; --ink-2:#b9ada0; --line:#3a3229;
+    --accent:#ef8256; --accent-ink:#1a120c; --accent-soft:#3a2418; --ok:#5cc98a; --ok-soft:#1d3326;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16130f; --bg-2:#1e1a15; --card:#231e18; --ink:#f5efe6; --ink-2:#b9ada0; --line:#3a3229;
+  --accent:#ef8256; --accent-ink:#1a120c; --accent-soft:#3a2418; --ok:#5cc98a; --ok-soft:#1d3326;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--font-body);overflow-x:hidden}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;background:var(--card);padding:8px 12px;z-index:9}
+h1,h2,h3{font-family:var(--font-head);line-height:1.1;margin:0;letter-spacing:-.02em}
+h2{font-size:clamp(1.6rem,4.5vw,2.3rem);font-weight:800}
+h3{font-size:1.2rem;font-weight:600}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:.85rem;font-weight:600;color:var(--ink-2);
+  background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+
+/* Hero */
+header.hero{padding:40px 0 56px;background:radial-gradient(1200px 500px at 80% -10%,var(--accent-soft),transparent 60%)}
+.hero-grid{display:grid;gap:40px;align-items:center}
+.hero h1{font-size:clamp(2.1rem,7.5vw,3.9rem);font-weight:800;margin:18px 0 16px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.lead{font-size:1.1rem;color:var(--ink-2);max-width:34em;margin:0 0 28px}
+.copybox{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.copybox .lbl{display:block;font-size:.8rem;font-weight:600;color:var(--ink-2);margin:0 0 8px;text-transform:uppercase;letter-spacing:.06em}
+.instr{font:500 .95rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--bg-2);border-radius:12px;
+  padding:12px 14px;margin:0 0 12px;word-break:break-word;user-select:all}
+.btn{appearance:none;border:0;cursor:pointer;font:600 1.1rem/1 var(--font-body);display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;min-height:56px;border-radius:14px;background:var(--accent);color:var(--accent-ink);transition:transform .15s ease,filter .15s}
+.btn:hover{filter:brightness(1.05)} .btn:active{transform:scale(.98)}
+.btn.ok{background:var(--ok);color:#fff}
+.btn svg{width:22px;height:22px;flex:none}
+.hint{font-size:.85rem;color:var(--ink-2);margin:10px 2px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0;padding:0;list-style:none}
+.chips li{font-size:.9rem;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+
+/* Phone mock */
+.mock{position:relative;max-width:420px;margin:0 auto;width:100%}
+.chat{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:18px;display:grid;gap:10px}
+.bub{max-width:88%;padding:10px 14px;border-radius:16px;font-size:.95rem}
+.bub.me{justify-self:end;background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px}
+.bub.ai{background:var(--bg-2);border-bottom-left-radius:4px}
+.bub.ai b{font-weight:600}
+.tag{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--ok-soft);color:var(--ok);margin-bottom:4px}
+
+section{padding:56px 0}
+section.alt{background:var(--bg-2)}
+.sec-head{margin:0 0 28px;max-width:40em}
+.sec-head p{color:var(--ink-2);margin:10px 0 0}
+
+/* Steps */
+.steps{display:grid;gap:20px;list-style:none;margin:0;padding:0;counter-reset:s}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.step-num{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:800 1.1rem var(--font-head)}
+.step p{margin:0;color:var(--ink-2)}
+.illu{background:var(--bg-2);border-radius:14px;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden}
+.illu svg{width:100%;height:100%}
+
+/* Tabs */
+.tabs{margin-top:4px}
+.tablist{display:inline-flex;background:var(--bg-2);border-radius:12px;padding:4px;gap:4px}
+.tablist button{appearance:none;border:0;background:transparent;color:var(--ink-2);font:600 .95rem var(--font-body);padding:8px 16px;border-radius:9px;cursor:pointer;min-height:40px}
+.tablist button[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tabpanel{padding:12px 2px 0;font-size:.95rem;color:var(--ink-2)}
+.tabpanel a.dl{display:inline-flex;align-items:center;gap:8px;margin-top:8px;font-weight:600;text-decoration:none;
+  background:var(--accent-soft);color:var(--ink);padding:10px 14px;border-radius:10px}
+
+/* Needs */
+.grid2{display:grid;gap:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.checks{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:12px}
+.checks li{display:flex;gap:12px;align-items:flex-start}
+.checks .ic{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--ok-soft);color:var(--ok);font-weight:700}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.95rem}
+th,td{text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600}
+td:last-child{color:var(--ink-2)}
+.free{color:var(--ok);font-weight:600}
+
+/* Promises */
+.promise{display:grid;gap:12px;margin-top:20px}
+.promise div{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.promise svg{flex:none;width:24px;height:24px;color:var(--accent)}
+
+/* FAQ */
+details{background:var(--card);border:1px solid var(--line);border-radius:16px;margin:0 0 12px;overflow:hidden}
+summary{cursor:pointer;list-style:none;padding:16px 48px 16px 18px;font-weight:600;position:relative;min-height:48px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";position:absolute;right:18px;top:50%;transform:translateY(-50%);font:600 1.4rem var(--font-head);color:var(--accent)}
+details[open] summary::after{content:"–"}
+details .ans{padding:0 18px 18px;color:var(--ink-2)}
+details .ans p{margin:0 0 8px}
+code{font:.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--bg-2);padding:1px 6px;border-radius:6px;word-break:break-word}
+
+.final{text-align:center}
+.final .copybox{max-width:620px;margin:24px auto 0;text-align:left}
+footer{padding:32px 0 48px;color:var(--ink-2);font-size:.9rem;text-align:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+@media (min-width:760px){
+  header.hero{padding:72px 0 88px}
+  .hero-grid{grid-template-columns:1.15fr .85fr}
+  .steps{grid-template-columns:repeat(3,1fr)}
+  .grid2{grid-template-columns:1fr 1fr}
+  .promise{grid-template-columns:repeat(3,1fr)}
+  section{padding:80px 0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#pasos">Saltar a los pasos</a>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Mac y Windows · Sin programar</span>
+      <h1>Tu asistente con WhatsApp, correo y redes — <em>en 10 minutos</em></h1>
+      <p class="lead">Copias una instrucción, la pegas en Claude y él instala todo. Tú solo entras a tus cuentas y escaneas un QR con el celular.</p>
+
+      <div class="copybox">
+        <span class="lbl">La instrucción</span>
+        <p class="instr" id="instr-1">Instala mi asistente desde https://github.com/fpiraguad/mi-claude siguiendo su INSTALAR.md</p>
+        <button class="btn" type="button" data-copy>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          <span>Copiar instrucción</span>
+        </button>
+        <p class="hint">Luego pégala en la pestaña <b>Code</b> de la app de Claude.</p>
+      </div>
+
+      <ul class="chips" aria-label="Lo que obtienes">
+        <li>💬 WhatsApp</li><li>📧 Gmail</li><li>🔎 Búsqueda web</li><li>🎨 Imágenes</li><li>📣 Redes sociales</li>
+      </ul>
+    </div>
+
+    <div class="mock" aria-hidden="true">
+      <div class="chat">
+        <div class="bub me">¿Qué mensajes tengo sin leer en WhatsApp?</div>
+        <div class="bub ai"><span class="tag">WhatsApp</span><br>Tienes <b>4 chats</b> sin leer. Tu mamá pregunta si vas el domingo y el grupo del trabajo movió la reunión a las 3.</div>
+        <div class="bub me">Respóndele a mi mamá que sí voy 😊</div>
+        <div class="bub ai">Listo. ¿Le envío: <i>“¡Sí voy el domingo! 😊”</i>?</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="pasos">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Tres pasos y listo</h2>
+      <p>No necesitas abrir una terminal ni instalar nada por tu cuenta. Claude te guía.</p>
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <div class="step-num" aria-hidden="true">1</div>
+        <div class="illu" aria-hidden="true">
+          <svg viewBox="0 0 320 200">
+            <rect x="60" y="34" width="200" height="124" rx="12" fill="var(--card)" stroke="var(--line)" stroke-width="3"/>
+            <rect x="40" y="158" width="240" height="12" rx="6" fill="var(--line)"/>
+            <circle cx="160" cy="92" r="34" fill="var(--accent-soft)"/>
+            <path d="M160 72v34m-14-14l14 14 14-14" stroke="var(--accent)" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="140" y="114" width="40" height="6" rx="3" fill="var(--accent)"/>
+          </svg>
+        </div>
+        <h3>Descarga Claude</h3>
+        <p>Instala la app de escritorio y entra con tu cuenta.</p>
+        <div class="tabs">
+          <div class="tablist" role="tablist" aria-label="Sistema operativo">
+            <button role="tab" id="tab-mac" aria-controls="panel-mac" aria-selected="true">Mac</button>
+            <button role="tab" id="tab-win" aria-controls="panel-win" aria-selected="false" tabindex="-1">Windows</button>
+          </div>
+          <div class="tabpanel" role="tabpanel" id="panel-mac" aria-labelledby="tab-mac">
+            Descarga el archivo <b>.dmg</b>, ábrelo y arrastra Claude a Aplicaciones.<br>
+            <a class="dl" href="https://claude.ai/download" target="_blank" rel="noopener">Descargar para Mac ↗</a>
+          </div>
+          <div class="tabpanel" role="tabpanel" id="panel-win" aria-labelledby="tab-win" hidden>
+            Descarga el instalador para Windows 10 u 11 y ábrelo. No necesitas Git.<br>
+            <a class="dl" href="https://claude.ai/download" target="_blank" rel="noopener">Descargar para Windows ↗</a>
+          </div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-num" aria-hidden="true">2</div>
+        <div class="illu" aria-hidden="true">
+          <svg viewBox="0 0 320 200">
+            <rect x="30" y="28" width="260" height="150" rx="14" fill="var(--card)" stroke="var(--line)" stroke-width="3"/>
+            <circle cx="50" cy="46" r="5" fill="var(--line)"/><circle cx="66" cy="46" r="5" fill="var(--line)"/><circle cx="82" cy="46" r="5" fill="var(--line)"/>
+            <rect x="80" y="66" width="160" height="34" rx="10" fill="var(--bg-2)"/>
+            <text x="108" y="88" font-family="Inter,sans-serif" font-size="13" fill="var(--ink-2)">Chat</text>
+            <rect x="188" y="70" width="48" height="26" rx="8" fill="var(--accent)"/>
+            <text x="212" y="88" text-anchor="middle" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="var(--accent-ink)">Code</text>
+            <path d="M214 132l-6-28 24 14-11 3z" fill="var(--ink)" stroke="var(--card)" stroke-width="2" stroke-linejoin="round"/>
+            <rect x="60" y="124" width="110" height="10" rx="5" fill="var(--line)"/>
+            <rect x="60" y="144" width="80" height="10" rx="5" fill="var(--line)"/>
+          </svg>
+        </div>
+        <h3>Abre la pestaña Code</h3>
+        <p>Arriba en la app verás las pestañas. Elige <b>Code</b> y, si te pide una carpeta, elige cualquiera (por ejemplo, Documentos).</p>
+      </li>
+      <li class="step">
+        <div class="step-num" aria-hidden="true">3</div>
+        <div class="illu" aria-hidden="true">
+          <svg viewBox="0 0 320 200">
+            <rect x="30" y="40" width="200" height="40" rx="12" fill="var(--bg)" stroke="var(--line)" stroke-width="2"/>
+            <rect x="44" y="56" width="150" height="8" rx="4" fill="var(--ink-2)" opacity=".5"/>
+            <circle cx="214" cy="60" r="10" fill="var(--accent)"/>
+            <path d="M210 60h8m-3-3l3 3-3 3" stroke="var(--accent-ink)" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <g font-family="Inter,sans-serif" font-size="13" fill="var(--ink)">
+              <circle cx="104" cy="108" r="9" fill="var(--ok)"/><path d="M99 108l3 3 6-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+              <text x="120" y="113">WhatsApp</text>
+              <circle cx="104" cy="134" r="9" fill="var(--ok)"/><path d="M99 134l3 3 6-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+              <text x="120" y="139">Correo</text>
+              <circle cx="104" cy="160" r="9" fill="var(--ok)"/><path d="M99 160l3 3 6-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+              <text x="120" y="165">Redes</text>
+            </g>
+            <rect x="244" y="96" width="46" height="80" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="3"/>
+            <rect x="253" y="112" width="28" height="28" rx="3" fill="none" stroke="var(--ink)" stroke-width="3" stroke-dasharray="5 3"/>
+          </svg>
+        </div>
+        <h3>Pega y sigue las instrucciones</h3>
+        <p>Pega la instrucción y envíala. Claude te irá pidiendo, una cosa a la vez, que entres a tus cuentas y escanees el QR de WhatsApp.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="alt" id="necesitas">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Qué necesitas</h2>
+      <p>Usas tus propias cuentas. Casi todo es gratis; solo pagas lo que uses.</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Antes de empezar</h3>
+        <ul class="checks">
+          <li><span class="ic" aria-hidden="true">✓</span><span>Una cuenta de Claude con un plan que incluya <b>Claude Code</b>.</span></li>
+          <li><span class="ic" aria-hidden="true">✓</span><span>Un celular con <b>WhatsApp</b>.</span></li>
+          <li><span class="ic" aria-hidden="true">✓</span><span>Unos <b>10 minutos</b> y tu computador con internet.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Qué cuesta</h3>
+        <table>
+          <caption class="sr">Costos de cada servicio</caption>
+          <thead><tr><th scope="col">Servicio</th><th scope="col">Costo</th></tr></thead>
+          <tbody>
+            <tr><td>WhatsApp y búsqueda web</td><td><span class="free">Gratis</span></td></tr>
+            <tr><td>Composio (tu Gmail)</td><td><span class="free">Plan gratis</span></td></tr>
+            <tr><td>Zernio (redes)</td><td><span class="free">Gratis</span> hasta 2 cuentas</td></tr>
+            <tr><td>APIMart (imágenes, audios)</td><td>Pago por uso, centavos por imagen</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="promise">
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Claude <b>nunca</b> escribe tus contraseñas.</span></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span>Claude <b>nunca</b> paga ni pone tu tarjeta.</span></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg><span>Tus keys se quedan <b>en tu computador</b>.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="preguntas">
+  <div class="wrap">
+    <div class="sec-head"><h2>Preguntas frecuentes</h2></div>
+    <details>
+      <summary>¿Mis keys son seguras?</summary>
+      <div class="ans">
+        <p>Sí. Se guardan solo en tu computador, en el archivo <code>~/.mi-claude/secrets.env</code>. Nunca se suben a internet ni a este proyecto.</p>
+        <p>Antes de guardarlas, el instalador comprueba que funcionen, y nunca las muestra completas en pantalla.</p>
+      </div>
+    </details>
+    <details>
+      <summary>¿Funciona en Windows?</summary>
+      <div class="ans"><p>Sí, en Windows 10 y 11, igual que en Mac. No necesitas Git ni permisos de administrador para casi nada; si Windows te pide aceptar una ventana al instalar Node.js, acéptala.</p></div>
+    </details>
+    <details>
+      <summary>¿Necesito saber programar?</summary>
+      <div class="ans"><p>No. Claude escribe y corre todos los comandos. Tú solo entras a tus cuentas cuando te lo pida, apruebas permisos y escaneas un QR con el celular.</p></div>
+    </details>
+    <details>
+      <summary>¿Cómo actualizo?</summary>
+      <div class="ans"><p>Dile a Claude <b>“actualiza mi asistente”</b>. Descarga la versión nueva sin tocar tus keys. Si algo falla, dile <b>“revisa mi asistente”</b> y revisará qué falta.</p></div>
+    </details>
+    <details>
+      <summary>¿Qué pasa si se corta a la mitad?</summary>
+      <div class="ans"><p>Nada grave. Abre Claude otra vez y pega la misma instrucción, o escribe <b>“termina lo que falta”</b>. Retoma solo lo pendiente.</p></div>
+    </details>
+  </div>
+</section>
+
+<section class="alt final">
+  <div class="wrap">
+    <h2>¿Listo? Copia y pega</h2>
+    <div class="copybox">
+      <span class="lbl">La instrucción</span>
+      <p class="instr" id="instr-2">Instala mi asistente desde https://github.com/fpiraguad/mi-claude siguiendo su INSTALAR.md</p>
+      <button class="btn" type="button" data-copy>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        <span>Copiar instrucción</span>
+      </button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Proyecto abierto y gratuito · <a href="https://github.com/fpiraguad/mi-claude">Ver el código en GitHub</a> · Licencia MIT
+  </div>
+</footer>
+
+<div class="sr" role="status" aria-live="polite" id="live"></div>
+
+<script>
+(function(){
+  var TEXT = 'Instala mi asistente desde https://github.com/fpiraguad/mi-claude siguiendo su INSTALAR.md';
+  var live = document.getElementById('live');
+
+  function fallbackCopy(){
+    var ta = document.createElement('textarea');
+    ta.value = TEXT; ta.setAttribute('readonly','');
+    ta.style.position='fixed'; ta.style.opacity='0'; ta.style.top='0';
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, TEXT.length);
+    var ok = false; try { ok = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+  function selectText(btn){
+    var p = btn.parentNode.querySelector('.instr');
+    if (!p || !window.getSelection) return;
+    var r = document.createRange(); r.selectNodeContents(p);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+  function feedback(btn, ok){
+    var label = btn.querySelector('span');
+    var original = 'Copiar instrucción';
+    if (ok){ btn.classList.add('ok'); label.textContent = '¡Copiado!'; live.textContent = 'Instrucción copiada. Ahora pégala en Claude.'; }
+    else { selectText(btn); label.textContent = 'Selecciónala y cópiala'; live.textContent = 'No se pudo copiar automáticamente. El texto quedó seleccionado: cópialo con Ctrl+C o Cmd+C.'; }
+    clearTimeout(btn._t);
+    btn._t = setTimeout(function(){ btn.classList.remove('ok'); label.textContent = original; }, 2200);
+  }
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if (navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(TEXT).then(function(){ feedback(btn, true); }, function(){ feedback(btn, fallbackCopy()); });
+      } else { feedback(btn, fallbackCopy()); }
+    });
+  });
+
+  // Tabs Mac / Windows
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function select(tab){
+    tabs.forEach(function(t){
+      var on = t === tab;
+      t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function(t, i){
+    t.addEventListener('click', function(){ select(t); });
+    t.addEventListener('keydown', function(e){
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){
+        var n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        select(n); n.focus(); e.preventDefault();
+      }
+    });
+  });
+  var ua = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || '';
+  if (/win/i.test(ua)) select(document.getElementById('tab-win'));
+})();
+</script>
+</body>
+</html>
