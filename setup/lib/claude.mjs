@@ -11,8 +11,12 @@ export const FIN_METODO = '<!-- mi-claude:fin -->';
 const esNuestro = (hook, marca) => typeof hook?.command === 'string' && hook.command.includes(marca);
 
 // Comando con el que Claude Code ejecuta un hook del repo. Comillas para rutas con espacios.
-export function comandoHook(rutaAbsoluta) {
-  return `node "${rutaAbsoluta}"`;
+// En Mac va la ruta completa de node: si se instaló en ~/.local/node o con nvm, la app de Claude
+// (abierta desde el Dock) puede no tenerlo en su PATH. En Windows queda `node`: el instalador lo
+// pone en el PATH del sistema y el hook puede correr en PowerShell, donde "ruta" sola no ejecuta.
+export function comandoHook(rutaAbsoluta, { plataforma = process.platform, node = process.execPath } = {}) {
+  const programa = plataforma === 'darwin' && path.isAbsolute(node) ? `"${node}"` : 'node';
+  return `${programa} "${rutaAbsoluta}"`;
 }
 
 // Quita todos los hooks nuestros (por la marca en la ruta) y vuelve a poner los de `registros`.

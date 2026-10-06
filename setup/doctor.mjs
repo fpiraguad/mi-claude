@@ -5,14 +5,13 @@
 //   node setup/doctor.mjs --json    lo mismo en JSON
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { REPO, dirClaude, dirDatos } from './lib/rutas.mjs';
 import { listar } from './keys.mjs';
 import {
   buscarClaude, parsearMcpList, contarHooksNuestros, tieneBloque, instruccionesClaude,
 } from './lib/claude.mjs';
-import { versionSuficiente, instruccionesNode } from './instalar.mjs';
+import { versionSuficiente, instruccionesNode, ejecutar } from './instalar.mjs';
 
 export const PUERTO_WHATSAPP = 7717;
 const ICONO = { ok: '✅', aviso: '⚠️ ', error: '❌', opcional: '⚪' };
@@ -39,11 +38,8 @@ async function estadoWhatsapp(fetch, puerto) {
 }
 
 function listarMcpReal(claude, env) {
-  const r = spawnSync(claude, ['mcp', 'list'], {
-    encoding: 'utf8', timeout: 60_000, windowsHide: true, env,
-    stdio: ['ignore', 'pipe', 'pipe'], shell: /\.(cmd|bat)$/i.test(claude),
-  });
-  return `${r.stdout ?? ''}${r.stderr ?? ''}`;
+  // ejecutar cita la ruta si claude es un .cmd (cmd.exe parte por espacios, p. ej. "C:\Users\Ana María\...").
+  return ejecutar(claude, ['mcp', 'list'], { timeout: 60_000, env }).salida;
 }
 
 const existeArchivo = (r) => { try { return fs.statSync(r).isFile(); } catch { return false; } };

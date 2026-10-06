@@ -18,6 +18,7 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { DIR_WHATSAPP_CODIGO, ETIQUETA, puerto as puertoDeEntorno, rutasDatos } from './lib/config.mjs';
+import { comandoNpm, ejecutar } from '../setup/instalar.mjs';
 
 const escaparXml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c]);
 const cadenaVbs = (s) => `"${String(s).replace(/"/g, '""')}"`;
@@ -152,16 +153,16 @@ function dependenciasListas() {
   return fs.existsSync(path.join(DIR_WHATSAPP_CODIGO, 'node_modules', 'baileys', 'package.json'));
 }
 
+// npm se corre con el mismo node (node npm-cli.js): no depende de npm.ps1 (bloqueado por la política
+// de PowerShell) ni de npm.cmd con shell (cmd.exe parte "C:\Program Files\..." por el espacio).
 function instalarDependencias() {
-  const esWin = process.platform === 'win32';
-  const npm = path.join(path.dirname(process.execPath), esWin ? 'npm.cmd' : 'npm');
-  const r = correr(fs.existsSync(npm) ? npm : 'npm', ['install', '--omit=dev', '--no-audit', '--no-fund'], {
+  const [prog, args] = comandoNpm('npm', ['install', '--omit=dev', '--no-audit', '--no-fund']);
+  const r = ejecutar(prog, args, {
     cwd: DIR_WHATSAPP_CODIGO,
     stdio: 'inherit',
-    shell: esWin,
     env: { ...process.env, PATH: `${path.dirname(process.execPath)}${path.delimiter}${process.env.PATH}` },
   });
-  if (r.status !== 0) throw new Error('No se pudieron instalar las dependencias de WhatsApp (npm install falló).');
+  if (r.codigo !== 0) throw new Error('No se pudieron instalar las dependencias de WhatsApp (npm install falló).');
 }
 
 function escribir(archivo, contenido, { modo, utf16 = false } = {}) {

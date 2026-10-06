@@ -32,13 +32,23 @@ export function versionSuficiente(version = process.versions.node, minimo = NODE
 
 export function instruccionesNode(plataforma = process.platform) {
   return plataforma === 'win32'
-    ? 'Instala Node 22: en PowerShell escribe  winget install OpenJS.NodeJS.LTS  y luego cierra y abre Claude.'
-    : 'Instala Node 22 sin contraseña: en la Terminal escribe  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash  y luego  nvm install 22 && nvm alias default 22  — después cierra y abre Claude.';
+    ? 'Instala Node 22: pídele a Claude «instala Node como dice el Paso 2 de INSTALAR.md» (usa winget o, si no hay, el instalador oficial) y luego cierra y abre Claude.'
+    : 'Instala Node 22 sin contraseña: pídele a Claude «instala Node como dice el Paso 2 de INSTALAR.md» (queda en ~/.local/node, sin Git) y luego cierra y abre Claude.';
+}
+
+// Con shell:true (necesario para .cmd en Windows) cmd.exe parte por espacios: se citan programa y args.
+export function citarCmd(s) {
+  const t = String(s);
+  return /[\s"&|<>^()]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
 }
 
 // Ejecuta un programa y devuelve { codigo, salida }. Nunca lanza.
 export function ejecutar(programa, args, opciones = {}) {
   const shell = esWindows && /\.(cmd|bat)$/i.test(programa);
+  if (shell) {
+    programa = citarCmd(programa);
+    args = args.map(citarCmd);
+  }
   const r = spawnSync(programa, args, {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -85,19 +95,46 @@ function escribirAtomico(archivo, contenido) {
 
 const ultimaLinea = (t) => String(t).trim().split(/\r?\n/).filter(Boolean).slice(-1)[0] ?? '';
 
+// El `tar` que trae el sistema (bsdtar: entiende ZIP). En Windows se usa el de System32 por ruta
+// completa: si Git está en el PATH, su `tar` (GNU) va primero y no sabe abrir ZIP.
+export function tarDelSistema({ plataforma = process.platform, env = process.env, existe = fs.existsSync } = {}) {
+  const candidato = plataforma === 'win32'
+    ? path.win32.join(env.SystemRoot || env.SYSTEMROOT || 'C:\\Windows', 'System32', 'tar.exe')
+    : '/usr/bin/tar';
+  return existe(candidato) ? candidato : 'tar';
+}
+
 // Descarga un ZIP y lo descomprime con el `tar` del sistema (Mac y Windows 10+). Devuelve la carpeta raíz.
-export async function descargarYExtraer(url, destino, fetch = globalThis.fetch) {
+// tolerante: si tar se queja (p. ej. enlaces simbólicos que Windows no deja crear) pero dejó la
+// carpeta, se sigue con lo que salió; quien llama verifica lo que necesita.
+export async function descargarYExtraer(url, destino, fetch = globalThis.fetch, { tolerante = false, log = () => {} } = {}) {
   const res = await fetch(url, { redirect: 'follow' });
   if (!res.ok) throw new Error(`descarga respondió ${res.status}`);
   fs.mkdirSync(destino, { recursive: true });
   const zip = path.join(destino, 'descarga.zip');
   fs.writeFileSync(zip, Buffer.from(await res.arrayBuffer()));
-  const r = ejecutar('tar', ['-xf', zip, '-C', destino]);
+  const r = ejecutar(tarDelSistema(), ['-xf', zip, '-C', destino]);
   fs.rmSync(zip, { force: true });
-  if (r.codigo !== 0) throw new Error(`no se pudo descomprimir (${ultimaLinea(r.salida)})`);
   const carpetas = fs.readdirSync(destino, { withFileTypes: true }).filter((d) => d.isDirectory());
+  if (r.codigo !== 0) {
+    if (!tolerante || carpetas.length !== 1) throw new Error(`no se pudo descomprimir (${ultimaLinea(r.salida)})`);
+    log(`   · tar avisó: ${ultimaLinea(r.salida)} (sigo con lo que se extrajo)`);
+  }
   if (carpetas.length !== 1) throw new Error('el ZIP no tiene la forma esperada');
   return path.join(destino, carpetas[0].name);
+}
+
+// ¿Hay un Git de verdad? Se averigua SIN llamar a git:
+// - Mac: /usr/bin/git existe siempre, pero en un Mac nuevo es un señuelo que abre la ventana de
+//   "instalar herramientas de desarrollador". `xcode-select -p` sale 0 solo si están instaladas
+//   (y no abre ninguna ventana). Homebrew también las exige, así que esto cubre su Git.
+// - Windows: `where git` (where.exe) busca en el PATH sin ejecutar nada.
+// - Otros: un archivo `git` en el PATH.
+export function hayGitDeVerdad({ plataforma = process.platform, correr = ejecutar, env = process.env, existe = fs.existsSync } = {}) {
+  if (plataforma === 'darwin') return correr('xcode-select', ['-p'], { env }).codigo === 0;
+  if (plataforma === 'win32') return correr('where', ['git'], { env }).codigo === 0;
+  const rutaPATH = env.PATH ?? '';
+  return rutaPATH.split(':').filter(Boolean).some((d) => existe(path.posix.join(d, 'git')));
 }
 
 // ---------- registro de lo instalado ----------
@@ -167,12 +204,14 @@ const PASO = {
     return { estado: 'ok', detalle };
   },
 
-  async terceros({ repo, env, enSeco, correr, fetch, log }) {
+  async terceros({ repo, env, enSeco, correr, fetch, log, hayGit }) {
     const lista = leerJson(path.join(repo, 'setup', 'skills-terceros.json'), { repos: [] }).repos;
     const destino = path.join(dirClaude(env), 'skills');
     const instaladas = [];
     const fallidas = [];
     let pendientes = 0;
+    // `npx skills add` clona con git. Sin un Git de verdad ni se intenta: se va directo al ZIP.
+    let conGit = null;
     for (const { fuente, rutas } of lista) {
       const faltan = Object.keys(rutas).filter((n) => !fs.existsSync(path.join(destino, n, 'SKILL.md')));
       instaladas.push(...Object.keys(rutas).filter((n) => !faltan.includes(n)));
@@ -180,20 +219,38 @@ const PASO = {
       pendientes += faltan.length;
       if (enSeco) { log(`   · instalaría ${faltan.join(', ')} desde ${fuente}`); continue; }
       log(`   · ${fuente}: ${faltan.join(', ')}`);
-      const [prog, args] = comandoNpm('npx', [
-        '-y', 'skills', 'add', fuente, '-g', '-y', '-a', 'claude-code', '--copy', '-s', ...faltan,
-      ]);
-      correr(prog, args, { env: { ...env, CI: '1', NO_COLOR: '1' } });
+      if (conGit === null) {
+        conGit = hayGit();
+        if (!conGit) log('   · no hay Git en este computador: descargo cada repo como ZIP');
+      }
+      if (conGit) {
+        const [prog, args] = comandoNpm('npx', [
+          '-y', 'skills', 'add', fuente, '-g', '-y', '-a', 'claude-code', '--copy', '-s', ...faltan,
+        ]);
+        correr(prog, args, { env: { ...env, CI: '1', NO_COLOR: '1' } });
+      }
       let siguen = faltan.filter((n) => !fs.existsSync(path.join(destino, n, 'SKILL.md')));
       if (siguen.length) {
-        // Plan B (p. ej. sin Git): bajar el ZIP del repo y copiar cada carpeta.
+        // Plan B (sin Git o si npx falló): bajar el ZIP del repo y copiar cada carpeta.
         const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'mi-claude-skill-'));
         try {
-          const raiz = await descargarYExtraer(`https://github.com/${fuente}/archive/HEAD.zip`, tmp, fetch);
+          // Repos grandes a veces cortan la descarga a medias ("terminated"): un reintento.
+          const url = `https://github.com/${fuente}/archive/HEAD.zip`;
+          let raiz;
+          try {
+            raiz = await descargarYExtraer(url, tmp, fetch, { tolerante: true, log });
+          } catch (e) {
+            log(`   · reintento ${fuente} (${e.message})`);
+            fs.rmSync(tmp, { recursive: true, force: true });
+            raiz = await descargarYExtraer(url, tmp, fetch, { tolerante: true, log });
+          }
           for (const n of siguen) {
             const src = path.join(raiz, rutas[n]);
-            if (!fs.existsSync(path.join(src, 'SKILL.md'))) continue;
-            fs.cpSync(src, path.join(destino, n), { recursive: true });
+            if (!fs.existsSync(path.join(src, 'SKILL.md'))) { log(`   · ${n}: no está en ${rutas[n]} dentro del ZIP`); continue; }
+            const d = path.join(destino, n);
+            fs.rmSync(d, { recursive: true, force: true });
+            // dereference: los repos a veces usan enlaces simbólicos; se copia el contenido real.
+            fs.cpSync(src, d, { recursive: true, dereference: true });
           }
         } catch (e) {
           log(`   · plan B falló para ${fuente}: ${e.message}`);
@@ -314,6 +371,7 @@ export function leerArgs(argv) {
 export async function instalar({
   enSeco = false, solo = null, env = process.env, repo = REPO, log = console.log,
   correr = ejecutar, fetch = globalThis.fetch, existe = (r) => { try { return fs.statSync(r).isFile(); } catch { return false; } },
+  hayGit = () => hayGitDeVerdad({ correr, env }),
 } = {}) {
   const pasos = solo ? PASOS.filter((p) => solo.includes(p)) : PASOS;
   log(enSeco ? '🔎 Modo en seco: muestro lo que haría, sin cambiar nada.\n' : '🛠  Instalando mi-claude…\n');
@@ -321,7 +379,7 @@ export async function instalar({
   for (const id of pasos) {
     let r;
     try {
-      r = await PASO[id]({ repo, env, enSeco, correr, fetch, existe, log });
+      r = await PASO[id]({ repo, env, enSeco, correr, fetch, existe, log, hayGit });
     } catch (e) {
       r = { estado: 'error', detalle: e.message };
     }

@@ -35,3 +35,99 @@ jobs:
           CLAUDE_CONFIG_DIR: ${{ runner.temp }}/claude-config
           MI_CLAUDE_DIR: ${{ runner.temp }}/mi-claude-datos
         run: node setup/doctor.mjs --json
+
+  # Computador recién estrenado: sin Git (en Mac, el señuelo /usr/bin/git sin herramientas de
+  # desarrollador), HOME vacío, instalación REAL de dependencias, skills, terceros, hooks y método.
+  maquina-limpia:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Casa vacía
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/casa"
+          echo "CASA=$RUNNER_TEMP/casa" >> "$GITHUB_ENV"
+
+      - name: Mac nuevo — git señuelo y xcode-select sin herramientas
+        if: runner.os == 'macOS'
+        run: |
+          SENUELO="$RUNNER_TEMP/senuelo"
+          mkdir -p "$SENUELO"
+          printf '#!/bin/sh\ntouch "%s/GIT_CALLED"\necho "git señuelo: $*" >&2\nexit 1\n' "$RUNNER_TEMP" > "$SENUELO/git"
+          printf '#!/bin/sh\necho "xcode-select: error: unable to get active developer directory" >&2\nexit 2\n' > "$SENUELO/xcode-select"
+          chmod +x "$SENUELO/git" "$SENUELO/xcode-select"
+          echo "$SENUELO" >> "$GITHUB_PATH"
+
+      - name: Mac nuevo — Node 22 en ~/.local/node con el comando de INSTALAR.md
+        if: runner.os == 'macOS'
+        env:
+          HOME: ${{ env.CASA }}
+        run: |
+          [ "$(command -v git)" = "$RUNNER_TEMP/senuelo/git" ]
+          node test/ci/maquina-limpia.mjs bloque "# Instalar Node 22 en ~/.local/node" "$RUNNER_TEMP/node-mac.sh"
+          bash -e "$RUNNER_TEMP/node-mac.sh"
+          "$HOME/.local/node/bin/node" -e "const [a,b]=process.versions.node.split('.').map(Number);if(a!==22||b<13)process.exit(1)"
+          grep -q '.local/node/bin' "$HOME/.zshrc"
+
+      - name: Windows sin Git en el PATH
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $limpio = ($env:Path -split ';' | Where-Object { $_ -and $_ -notmatch '\\Git(\\|$)' }) -join ';'
+          "PATH=$limpio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Windows — Git no está
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          where.exe git
+          if ($LASTEXITCODE -eq 0) { throw 'git sigue en el PATH' }
+          $global:LASTEXITCODE = 0
+          node --version
+
+      - name: Windows — resolver el MSI de Node 22 con el comando de INSTALAR.md
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          node test/ci/maquina-limpia.mjs bloque "# Resolver el instalador de Node 22 (MSI)" "$env:RUNNER_TEMP\msi.ps1"
+          . "$env:RUNNER_TEMP\msi.ps1"
+          if ($url -notmatch '^https://nodejs\.org/dist/v22\.\d+\.\d+/node-v22\.\d+\.\d+-(x64|arm64)\.msi$') { throw "URL rara: $url" }
+          $codigo = curl.exe -s -o NUL -w '%{http_code}' -I -L $url
+          if ($codigo -ne '200') { throw "el MSI respondió $codigo" }
+          "MSI listo para instalar: $url"
+
+      - name: Instalación real
+        env:
+          HOME: ${{ env.CASA }}
+          USERPROFILE: ${{ env.CASA }}
+          CLAUDE_CONFIG_DIR: ${{ env.CASA }}/.claude
+          MI_CLAUDE_DIR: ${{ env.CASA }}/.mi-claude
+        run: node setup/instalar.mjs --solo dependencias,skills,terceros,hooks,metodo
+
+      - name: Comprobar lo instalado
+        env:
+          CLAUDE_CONFIG_DIR: ${{ env.CASA }}/.claude
+        run: node test/ci/maquina-limpia.mjs comprobar
+
+      - name: Arranque de WhatsApp en seco
+        env:
+          HOME: ${{ env.CASA }}
+          USERPROFILE: ${{ env.CASA }}
+          MI_CLAUDE_DIR: ${{ env.CASA }}/.mi-claude
+        run: node whatsapp/arranque.mjs instalar --en-seco
+
+      - name: Nadie llamó a git
+        if: always() && runner.os == 'macOS'
+        run: |
+          if [ -e "$RUNNER_TEMP/GIT_CALLED" ]; then echo "algo llamó a git (en un Mac nuevo habría abierto la ventana de herramientas)"; exit 1; fi
+          echo "git nunca se llamó"

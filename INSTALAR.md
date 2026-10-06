@@ -116,13 +116,19 @@ pidiendo instalar "herramientas de desarrollador". El ZIP es suficiente.
 
 Revisa con `node --version`. Si da `v22.13` o mayor (o `v23`, `v24`…), sigue al Paso 3.
 
-*Mac* (sin contraseña de administrador, con nvm):
+*Mac* (sin contraseña de administrador y **sin Git**: el Node oficial queda en `~/.local/node`):
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm install 22 && nvm alias default 22
+# Instalar Node 22 en ~/.local/node
+ARQ=$(uname -m); if [ "$ARQ" = x86_64 ]; then ARQ=x64; fi
+ARCHIVO=$(curl -fsSL https://nodejs.org/dist/latest-v22.x/SHASUMS256.txt | grep -o "node-v22[0-9.]*-darwin-$ARQ\.tar\.gz" | head -1)
+mkdir -p "$HOME/.local/node" && curl -fsSL "https://nodejs.org/dist/latest-v22.x/$ARCHIVO" | tar -xz -C "$HOME/.local/node" --strip-components 1
+for f in .zprofile .zshrc .bash_profile; do grep -qs '.local/node/bin' "$HOME/$f" || printf '\nexport PATH="$HOME/.local/node/bin:$PATH"\n' >> "$HOME/$f"; done
+export PATH="$HOME/.local/node/bin:$PATH"; node --version
 ```
+No uses el instalador de nvm: en un Mac sin herramientas de desarrollador se detiene (y con
+`METHOD=git`, o sin `METHOD`, llama a `git`, que abre la ventana de "instalar herramientas").
 Como cada comando abre una terminal nueva, si luego `node` no aparece, antepón
-`export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh";` a tus comandos.
+`export PATH="$HOME/.local/node/bin:$PATH";` a tus comandos.
 
 *Windows (PowerShell)*:
 ```powershell
@@ -131,8 +137,33 @@ $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Env
 node --version
 ```
 Antes de correr `winget`, dile a la persona que Windows puede mostrar una ventana pidiendo permiso
-y que debe aceptarla ella. Si `node` sigue sin aparecer, pídele que cierre y vuelva a abrir Claude,
-y retoma con la regla de retomar.
+y que debe aceptarla ella.
+
+**Si `winget` no existe** (pasa en algunos Windows 10), usa el instalador oficial. Primero averigua
+cuál es el último Node 22:
+```powershell
+# Resolver el instalador de Node 22 (MSI)
+$arq = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }
+$indice = (curl.exe -fsSL https://nodejs.org/dist/index.json) -join "`n" | ConvertFrom-Json
+$version = ($indice | Where-Object { $_.version -like 'v22.*' -and $_.files -contains "win-$arq-msi" } | Select-Object -First 1).version
+$url = "https://nodejs.org/dist/$version/node-$version-$arq.msi"
+$msi = Join-Path $env:TEMP "node-$version-$arq.msi"
+$url
+```
+Luego descárgalo e instálalo (dile antes a la persona que va a salir una ventana de Windows pidiendo
+permiso y que la acepte ella):
+```powershell
+curl.exe -fL -o $msi $url
+Start-Process msiexec -Wait -ArgumentList '/i', "`"$msi`"", '/passive'
+$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
+node --version
+```
+Si `node` sigue sin aparecer, pídele que cierre y vuelva a abrir Claude, y retoma con la regla de retomar.
+
+**npm en Windows:** el instalador corre npm por su cuenta; tú no lo necesitas. Si alguna vez corres
+npm o npx tú mismo en PowerShell, escribe **`npm.cmd`** / **`npx.cmd`** (no `npm`/`npx`, que PowerShell
+puede bloquear con un error de "ejecución de scripts deshabilitada"). **Nunca cambies la política de
+ejecución** (`Set-ExecutionPolicy`) del computador de la persona.
 
 ## Paso 3 — Instalar todo
 
@@ -145,6 +176,10 @@ node setup/instalar.mjs
 Instala skills, hooks, el método de trabajo, los MCP (búsqueda y, si ya hay key, Composio) y el
 servicio de WhatsApp en segundo plano. Si falla un paso puntual, puedes repetir solo ese con
 `node setup/instalar.mjs --solo <paso>`. Para ver qué haría sin cambiar nada: `--en-seco`.
+
+No necesita Git ni Python: si el computador no tiene Git, las skills de terceros se bajan como ZIP
+(el instalador lo detecta solo, sin llamar a `git`). En Mac, si `node` no aparece, antepón
+`export PATH="$HOME/.local/node/bin:$PATH";` al comando.
 
 Mensaje: *"Listo lo básico ✅ Ahora conectamos tus servicios, uno por uno."*
 
